@@ -7,14 +7,14 @@ This repo file contains the .NET Application Updater component sample.  For more
 
 ## CONTENTS:
 
--> AppStart - THe AppStart.exe project.
--> AppUpdater - The .NET Application Updater component project.
--> AppUpdaterKeys - The assembly used to hold valid application keys.
--> Docs - Documenation for the .NET Application Updater component.
--> Samples - Files for the SampleApp walkthrough.
-  -> SampleApp - Sample described in detail in ".Net Application Updater.doc".
-  -> AdvancedSample - Illustrates advances uses of the .Net Application Updater component.
-  -> SimpleSample - Illustrates the most basic use of the .NET Application Updater component.
+- AppStart - THe AppStart.exe project.
+- AppUpdater - The .NET Application Updater component project.
+- AppUpdaterKeys - The assembly used to hold valid application keys.
+- Docs - Documenation for the .NET Application Updater component.
+- Samples - Files for the SampleApp walkthrough.
+  - SampleApp - Sample described in detail in ".Net Application Updater.doc".
+  - AdvancedSample - Illustrates advances uses of the .Net Application Updater component.
+  - SimpleSample - Illustrates the most basic use of the .NET Application Updater component.
 
 
 
@@ -42,9 +42,11 @@ To address the when to check for updates, the .NET Application Updater component
 
 There are several ways to go about the how to check for updates:
 
-*Method #1: Direct File Check* The simplest way to check for updates is to use HTTP to compare the last modified date/time stamp of the application files on the server with that on the client. If the server has newer files, the client knows its time to update itself. This is the same way a Web browser knows if it needs to re-download an html page or image or whether it can just re-use the one previously downloaded. This is certainly the simplest to administrate. When a new version of the app is available, the administrator simply copies the newer version over the older version on the Web server. The problem with this is that the update is not atomic and thus there are potential windows of failure. For example, if an administrator updates the version of the app on the Web server while a client was in the middle of downloading the previous update, that client may be left with some files from the previous update and some files from new update. For this reason, using a direct file check is not recommended for any non-trivial applications.
+## Method #1: Direct File Check
+The simplest way to check for updates is to use HTTP to compare the last modified date/time stamp of the application files on the server with that on the client. If the server has newer files, the client knows its time to update itself. This is the same way a Web browser knows if it needs to re-download an html page or image or whether it can just re-use the one previously downloaded. This is certainly the simplest to administrate. When a new version of the app is available, the administrator simply copies the newer version over the older version on the Web server. The problem with this is that the update is not atomic and thus there are potential windows of failure. For example, if an administrator updates the version of the app on the Web server while a client was in the middle of downloading the previous update, that client may be left with some files from the previous update and some files from new update. For this reason, using a direct file check is not recommended for any non-trivial applications.
 
-*Method #2: Manifest Check* To solve the atomicity problem with direct file checks a level of indirection is needed. To create a level of indirection a manifest file on the server is used. A valid server manifest file for use with the .NET Application Updater component looks like this:
+## Method #2: Manifest Check
+To solve the atomicity problem with direct file checks a level of indirection is needed. To create a level of indirection a manifest file on the server is used. A valid server manifest file for use with the .NET Application Updater component looks like this:
 
     <VersionConfig>
         <AvailableVersion>1.0.0.0</AvailableVersion>
@@ -53,7 +55,8 @@ There are several ways to go about the how to check for updates:
 
 AvailableVersion specifies the assembly version number of the latest available version. The ApplicationURL property specifies the URL where that version of the application resides. When the administrator wants to update the client applications, they would copy the new version of the app up to the Web server and modify the server manifest file appropriately. The client itself will then detect that the server manifest file has changed and download the manifest file. The client then compares the assembly version number specified in the manifest with the assembly version number of the applications .exe file. If the server manifest file AvailableVersion is newer, the application knows its time to perform an update. This approach has none of the atomicity problems of the previous approach and is the recommended way to check for updates for most applications.
 
-*Method #3: XML Web Service Check XML* Web services provide a way to perform more advanced update checks. For example, suppose you wanted to roll out an update to a set of early adopters before you rolled it out to the rest of your users. If the client application calls an XML Web service to check if an update is available, that XML Web service could then look up that user in a database and determine if the user is an early adopter or not. If they are, the XML Web service could return a value indicating that an update is available. If not, the Web service could return a value indicating that a new update is not available. Because the Web service used to check for updates could take many forms depending on what custom functionality is desired, the .NET Application Updater component does not provide direct XML Web service support. To use an XML Web service to check for updates, first build the XML Web service and then hook the OnCheckForUpdate event. This allows the poller threads update check to be replaced with your own custom check. The OnCheckForUpdate event has a return value to indicate whether an update was detected or not.
+## Method #3: XML Web Service Check XML
+Web services provide a way to perform more advanced update checks. For example, suppose you wanted to roll out an update to a set of early adopters before you rolled it out to the rest of your users. If the client application calls an XML Web service to check if an update is available, that XML Web service could then look up that user in a database and determine if the user is an early adopter or not. If they are, the XML Web service could return a value indicating that an update is available. If not, the Web service could return a value indicating that a new update is not available. Because the Web service used to check for updates could take many forms depending on what custom functionality is desired, the .NET Application Updater component does not provide direct XML Web service support. To use an XML Web service to check for updates, first build the XML Web service and then hook the OnCheckForUpdate event. This allows the poller threads update check to be replaced with your own custom check. The OnCheckForUpdate event has a return value to indicate whether an update was detected or not.
 
 # Downloading Updates
 
@@ -106,26 +109,24 @@ Included with this paper is a zip file named DotNetUpdater.zip that contains the
 
 In this step we will build the application to auto-update. If you want, you can substitute in your own application here. You can also use the pre-built sample application included in the Samples\SampleApp\SampleApp directory of the zip file. However for the purpose of proving that there isnt anything special about SampleApp, well walk through its creation.
 
-1.       Use Visual Studio .NET to create a new Windows Application project, name it SampleApp.
-
-2.       Give the form an interesting background color of your choice. We will be using background color to differentiate between versions later.
-
-3.       Now lets add a tiny bit of functionality to this application in the form of a button that opens a form residing in a separate assembly. First add a button to your form. The zip file contains an assembly with a simple Windows Form in it. Add a reference to the Samples\SampleApp\SimpleForm assembly in the zip. Then add two lines of code to your button event handler:
+1. Use Visual Studio .NET to create a new Windows Application project, name it SampleApp.
+2. Give the form an interesting background color of your choice. We will be using background color to differentiate between versions later.
+3. Now lets add a tiny bit of functionality to this application in the form of a button that opens a form residing in a separate assembly. First add a button to your form. The zip file contains an assembly with a simple Windows Form in it. Add a reference to the Samples\SampleApp\SimpleForm assembly in the zip. Then add two lines of code to your button event handler:
 
     SimpleForm.Form1 F = new SimpleForm.Form1();
     F.Show();
 
-4.       Switch your build flag to build RELEASE instead of debug. This will allow us to avoid pdb file locking problems later when we build a new version of the application while the original copy is still running.
+4. Switch your build flag to build RELEASE instead of debug. This will allow us to avoid pdb file locking problems later when we build a new version of the application while the original copy is still running.
 
-5.       Build and test your application. It should look similar to the Samples\SampleApp\SampleApp in the zip file.
+5. Build and test your application. It should look similar to the Samples\SampleApp\SampleApp in the zip file.
 
 ## Step 2: Add the .NET Application Updater Component
 
 In this step we will add the .NET Application Updater component to SampleApp.
 
-1.       In the components tab of the Visual Studio .NET toolbox, right click and select Customize Toolbox. Select the .NET Framework Components tab. Browse and select the AppUpdater.dll in the AppUpdater project included in the zip. Click OK.
+1. In the components tab of the Visual Studio .NET toolbox, right click and select Customize Toolbox. Select the .NET Framework Components tab. Browse and select the AppUpdater.dll in the AppUpdater project included in the zip. Click OK.
 
-2.       An AppUpdater icon should now show up at the bottom of the list of components in the toolbox. Drag and drop the AppUpdater component onto the SampleApp Form. An appUpdater1 instance of the .NET Application Updater component should be instantiated and appear below the form.
+2. An AppUpdater icon should now show up at the bottom of the list of components in the toolbox. Drag and drop the AppUpdater component onto the SampleApp Form. An appUpdater1 instance of the .NET Application Updater component should be instantiated and appear below the form.
 
 ## Step 3: Configure the .NET Application Updater Component
 
@@ -171,13 +172,13 @@ The Samples\SampleApp\SampleApp_Complete directory contains a version of the app
 
 In this step we will build the V1 version of the application and deploy it to the client. The deployment is essentially simulating what the install program for your application will do.
 
-1.       In the SampleApp project, open the AssemblyInfo.cs file. Change the AssemblyVersion value from "1.0.*" to 1.0.0.0. This will cause the built assembly to get marked with a value of 1.0.0.0 instead of the ever increasing value Visual Studio normally assigns.
+1. In the SampleApp project, open the AssemblyInfo.cs file. Change the AssemblyVersion value from "1.0.*" to 1.0.0.0. This will cause the built assembly to get marked with a value of 1.0.0.0 instead of the ever increasing value Visual Studio normally assigns.
 
-2.       Build the application.
+2. Build the application.
 
-3.       Copy the Samples\SampleApp\SampleApp_ClientSetup directory from the zip onto your local machine. It doesnt matter where you copy it, however the program files directory is the most realistic place to put it since that is where most applications get installed. Youll notice that SampleApp_ClientSetup directory already has AppStart.exe included. AppStart.config is already set to point into the 1.0.0.0 directory and run SampleApp.exe.
+3. Copy the Samples\SampleApp\SampleApp_ClientSetup directory from the zip onto your local machine. It doesnt matter where you copy it, however the program files directory is the most realistic place to put it since that is where most applications get installed. Youll notice that SampleApp_ClientSetup directory already has AppStart.exe included. AppStart.config is already set to point into the 1.0.0.0 directory and run SampleApp.exe.
 
-4.       Copy the complete SampleApp (Appupdater.dll, SimpleForm.dll & SampleApp.exe) from the release build directory of SampleApp to the SampleApp_ClientSetup\1.0.0.0 directory on your client.
+4. Copy the complete SampleApp (Appupdater.dll, SimpleForm.dll & SampleApp.exe) from the release build directory of SampleApp to the SampleApp_ClientSetup\1.0.0.0 directory on your client.
 
 At this point a fully functional version of the application should be installed on the client and executable by running AppStart.exe
 
@@ -185,29 +186,23 @@ At this point a fully functional version of the application should be installed 
 
 In this step we will setup the Web server for use in rolling out application updates. The .NET Application Updater component uses HTTP-DAV to download the application update and thus requires a Web server that supports HTTP-DAV. IIS 5.0 that comes with Windows 2000 and newer operating systems support HTTP-DAV.
 
-1.       Copy the Samples/SampleApp_ServerSetup directory from the zip into the wwwroot directory of your Web server. Note: Any location on your Web server can be used, but be sure to update the UpdateUrl property accordingly. Notice that UpdateVersion.xml is already setup for use as the server manifest file.
+1. Copy the Samples/SampleApp_ServerSetup directory from the zip into the wwwroot directory of your Web server. Note: Any location on your Web server can be used, but be sure to update the UpdateUrl property accordingly. Notice that UpdateVersion.xml is already setup for use as the server manifest file.
 
-2.       For completeness, copy the V1 version of SampleApp into the 1.0.0.0 folder of the Web server.
+2. For completeness, copy the V1 version of SampleApp into the 1.0.0.0 folder of the Web server.
 
-3.       Enable IIS Directory Browsing for the SampleApp_ServerSetup directory on your Web server. Since the .NET Application Updater component enumerates the contents of directories during download, Directory Browsing must be enabled. To do this, open the Internet Information Services manager in the control panel. Select the SampleApp_ServerSetup folder and open its properties. Select the Directory Tab. Check Directory Browsing, and click OK.
+3. Enable IIS Directory Browsing for the SampleApp_ServerSetup directory on your Web server. Since the .NET Application Updater component enumerates the contents of directories during download, Directory Browsing must be enabled. To do this, open the Internet Information Services manager in the control panel. Select the SampleApp_ServerSetup folder and open its properties. Select the Directory Tab. Check Directory Browsing, and click OK.
 
 ## Step 6: Automatically update the application
 
 OK, now its time to see the results of all this hard work by automatically rolling out a new version.
 
-1.       If the SampleApp version you deployed to the client isnt running, launch it and leave it running. Remember to use AppStart.exe.
-
-2.       Go back to Visual Studio and change something noticeable on the SampleApp form (ex change the background color).
-
-3.       Change the VersionInfo in AssemblyInfo.cs to be 2.0.0.0.
-
-4.       Rebuild.
-
-5.       Go to the Web server and create a 2.0.0.0 directory as a peer to the 1.0.0.0 directory. Copy the new version of the application from the release build directory into the new 2.0.0.0 directory on the Web server.
-
-6.       Open UpdateVersion.xml and change AvailableVersion to be 2.0.0.0. Change the ApplicationURL to point at the new 2.0.0.0 directory.
-
-7.       Save the changes to UpdateVersion.xml.
+1. If the SampleApp version you deployed to the client isnt running, launch it and leave it running. Remember to use AppStart.exe.
+2. Go back to Visual Studio and change something noticeable on the SampleApp form (ex change the background color).
+3. Change the VersionInfo in AssemblyInfo.cs to be 2.0.0.0.
+4. Rebuild.
+5. Go to the Web server and create a 2.0.0.0 directory as a peer to the 1.0.0.0 directory. Copy the new version of the application from the release build directory into the new 2.0.0.0 directory on the Web server.
+6. Open UpdateVersion.xml and change AvailableVersion to be 2.0.0.0. Change the ApplicationURL to point at the new 2.0.0.0 directory.
+7. Save the changes to UpdateVersion.xml.
 
 As soon as you save the new UpdateVersion.xml, within 30 seconds the running copy of SampleApp should detect the newly available version. SampleApp will then download the new version, apply the update, and pop up the default UI asking the user if they want to restart and start using the new version immediately. Click Yes in response to this dialog. SampleApp should restart and be running the new version. If you look at the client deployment of SampleApp you will notice there is now a 2.0.0.0 directory next to the original 1.0.0.0 directory. The 1.0.0.0 directory will be cleaned up the next time an update occurs.
 
