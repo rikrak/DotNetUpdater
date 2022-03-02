@@ -117,7 +117,6 @@ In this step we will build the application to auto-update. If you want, you can 
     F.Show();
 
 4. Switch your build flag to build RELEASE instead of debug. This will allow us to avoid pdb file locking problems later when we build a new version of the application while the original copy is still running.
-
 5. Build and test your application. It should look similar to the Samples\SampleApp\SampleApp in the zip file.
 
 ## Step 2: Add the .NET Application Updater Component
@@ -125,7 +124,6 @@ In this step we will build the application to auto-update. If you want, you can 
 In this step we will add the .NET Application Updater component to SampleApp.
 
 1. In the components tab of the Visual Studio .NET toolbox, right click and select Customize Toolbox. Select the .NET Framework Components tab. Browse and select the AppUpdater.dll in the AppUpdater project included in the zip. Click OK.
-
 2. An AppUpdater icon should now show up at the bottom of the list of components in the toolbox. Drag and drop the AppUpdater component onto the SampleApp Form. An appUpdater1 instance of the .NET Application Updater component should be instantiated and appear below the form.
 
 ## Step 3: Configure the .NET Application Updater Component
@@ -153,7 +151,7 @@ These are the core properties of the .NET Application Updater and will need to b
 | UpdateRetryAttempts | If a serious error occurs during the update process, (ex. The downloader has exceeded the DownloadRetryAttempts), an application update error is generated. By default, the update attempt will stop, but will attempt to resume the next time the application is started (ex maybe the update Web server was just down for day). This property controls how many times an update will be attempted. If this value is exceeded, the updater aborts the update, resets its state and goes back to checking for updates. |
 | ValidateAssemblies | This controls the level of validation done on downloaded assemblies. See the security section of this paper for more info. |
 
-###Poller Properties 
+### Poller Properties 
 The second sub-component of the AppUpdater is the Poller. The Poller controls the update checks. Below is a description of the properties, but all defaults will work fine for our SampleApp.
 
 | Property Name | Description |
